@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 
 # Read the CSV file into a DataFrame
-df = pd.read_csv('1234.csv')
+df = pd.read_csv('1234_small.csv')
 
 # Create a new DataFrame with a row for each console, title, and sales category
 new_df = pd.DataFrame(columns=['id', 'parent', 'value'])
