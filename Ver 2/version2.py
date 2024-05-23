@@ -42,6 +42,11 @@ def update_detail_chart(clickData):
 
         # Split the path into components
         path_parts = path.split('/')
+        logging.info(f"Length of path_parts: {len(path_parts)}")
+        
+        # If the click is at depth 1 and is not a specific publisher, do not show the detailed chart
+        if len(path_parts) == 1 and path_parts[0] != "Publisher Name":
+            return None
         
         # Create a filtering condition based on the path parts
         condition = True
@@ -70,6 +75,7 @@ def update_detail_chart(clickData):
 
     # Return None if no clickData
     return None
+
 
 # Run the app
 if __name__ == '__main__':
