@@ -15,6 +15,13 @@ df['developer'] = df['developer'].fillna('Unknown')
 # Aggregate data by console and publisher for the initial sunburst chart
 agg_df = df.groupby(['console', 'publisher']).sum().reset_index()
 
+# Create the scatter plot for Critic Score vs. Total Sales
+fig_scatter = px.scatter(
+    df, x='critic_score', y='total_sales', color='genre', 
+    title='Critic Score vs. Total Sales',
+    labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'}
+)
+
 # Initialize the Dash app
 app = dash.Dash(__name__)
 
@@ -27,6 +34,9 @@ app.layout = html.Div([
             figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
         ),
         html.Div(id='detail-chart-container')
+    ]),
+    html.Div([
+        dcc.Graph(id='scatter-plot', figure=fig_scatter)
     ])
 ])
 
@@ -58,10 +68,6 @@ def update_detail_chart(clickData):
             sunburst_path = ['publisher', 'developer', 'title']
         elif len(path_parts) == 2:
             sunburst_path = ['publisher', 'developer', 'title']
-        # elif len(path_parts) == 3:
-        #     sunburst_path = ['developer', 'title']
-        # elif len(path_parts) == 4:
-        #     sunburst_path = ['title']
         else:
             sunburst_path = ['console', 'publisher', 'developer', 'title']
         
