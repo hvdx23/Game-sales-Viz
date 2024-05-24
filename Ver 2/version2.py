@@ -4,13 +4,13 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import logging
+import numpy as np
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
 # Load and preprocess the data
 df = pd.read_csv('1234.csv')
-df['developer'] = df['developer'].fillna('Unknown')
 
 # Aggregate data by console and publisher for the initial sunburst chart
 agg_df = df.groupby(['console', 'publisher']).sum().reset_index()
@@ -24,6 +24,12 @@ fig_scatter = px.scatter(
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
+
+# Define a function to fill null values in a DataFrame
+def fill_null_values(df):
+    df['critic_score'] = df['critic_score'].fillna(pd.Series(np.random.uniform(1, 5, size=len(df))))  # Fill nulls with random values between 1 and 5
+    df['total_sales'] = df['total_sales'].fillna(pd.Series(np.random.uniform(0.1, 2.5, size=len(df))))  # Fill nulls with random values between 0.1 and 2.5
+    return df
 
 # Define the layout of the app
 app.layout = html.Div([
@@ -56,7 +62,7 @@ def update_charts(clickData):
         logging.info(f"Length of path_parts: {len(path_parts)}")
 
         # Create a filtering condition based on the path parts
-        condition = True
+        condition = pd.Series([True] * len(df))
         for i, part in enumerate(path_parts):
             if part:
                 column = ['console', 'publisher', 'developer', 'title'][i]
@@ -74,6 +80,9 @@ def update_charts(clickData):
             sunburst_path = ['title']
         else:
             sunburst_path = ['console', 'publisher', 'developer', 'title']
+
+        # Fill null values for the filtered DataFrame
+        filtered_df = fill_null_values(filtered_df)
 
         detail_figure = px.sunburst(filtered_df, path=sunburst_path, values='total_sales')
         
