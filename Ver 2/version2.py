@@ -7,7 +7,7 @@ import logging
 import numpy as np
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load and preprocess the data
 df = pd.read_csv('1234.csv')
@@ -26,10 +26,16 @@ fig_scatter = px.scatter(
 app = dash.Dash(__name__)
 
 # Define a function to fill null values in a DataFrame
+# Define a function to fill null values in a DataFrame with random values within specified ranges
 def fill_null_values(df):
-    df['critic_score'] = df['critic_score'].fillna(pd.Series(np.random.uniform(1, 5, size=len(df))))  # Fill nulls with random values between 1 and 5
-    df['total_sales'] = df['total_sales'].fillna(pd.Series(np.random.uniform(0.1, 2.5, size=len(df))))  # Fill nulls with random values between 0.1 and 2.5
+    null_count = df.isnull().sum().sum()  # Count total null values before filling
+    df.loc[df['critic_score'].isnull(), 'critic_score'] = np.random.uniform(1, 6, size=len(df[df['critic_score'].isnull()]))
+    df.loc[df['total_sales'].isnull(), 'total_sales'] = np.random.uniform(0.1, 2.5, size=len(df[df['total_sales'].isnull()]))
+    filled_null_count = df.isnull().sum().sum() - null_count  # Count total null values filled
+    logging.info(f"Filled {filled_null_count} null values.")
     return df
+
+
 
 # Define the layout of the app
 app.layout = html.Div([
@@ -56,9 +62,11 @@ def update_charts(clickData):
     if clickData:
         path = clickData['points'][0]['id']
         logging.info(f"Clicked path: {path}")
+        
 
         # Split the path into components
         path_parts = path.split('/')
+        
         logging.info(f"Length of path_parts: {len(path_parts)}")
 
         # Create a filtering condition based on the path parts
@@ -99,5 +107,4 @@ def update_charts(clickData):
 
 # Run the app
 if __name__ == '__main__':
-    logging.info('Starting Dash server...')
     app.run_server(debug=True)
