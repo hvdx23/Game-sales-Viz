@@ -5,6 +5,7 @@ import plotly.express as px
 import pandas as pd
 import logging
 import numpy as np
+import dash_bootstrap_components as dbc
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,8 +24,8 @@ fig_scatter = px.scatter(
 )
 
 # Initialize the Dash app
-app = dash.Dash(__name__)
-
+# app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Define a function to fill null values in a DataFrame
 # Define a function to fill null values in a DataFrame with random values within specified ranges
 def fill_null_values(df):
@@ -37,20 +38,42 @@ def fill_null_values(df):
 
 
 
-# Define the layout of the app
+# # Define the layout of the app
+# app.layout = html.Div([
+#     html.H1("Video Game Sales"),
+#     html.Div(id='charts-container', children=[
+#         dcc.Graph(
+#             id='console-publisher-sunburst',
+#             figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
+#         ),
+#         html.Div(id='detail-chart-container')
+#     ]),
+#     html.Div([
+#         dcc.Graph(id='scatter-plot', figure=fig_scatter)
+#     ])
+# ])
+
 app.layout = html.Div([
-    html.H1("Video Game Sales"),
-    html.Div(id='charts-container', children=[
-        dcc.Graph(
-            id='console-publisher-sunburst',
-            figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
-        ),
-        html.Div(id='detail-chart-container')
-    ]),
-    html.Div([
-        dcc.Graph(id='scatter-plot', figure=fig_scatter)
+    html.H1("Video Game Sales", style={'textAlign': 'center'}),
+    html.Div(className='row', children=[
+        html.Div(className='col-md-6', children=[
+            html.Div(id='charts-container', children=[
+                dcc.Graph(
+                    id='console-publisher-sunburst',
+                    figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
+                ),
+                html.Div(id='detail-chart-container')
+            ])
+        ]),
+        html.Div(className='col-md-6', children=[
+            dcc.Graph(id='scatter-plot', figure=fig_scatter)
+        ])
     ])
 ])
+
+
+
+
 
 # Define the callback function for interactivity
 @app.callback(
