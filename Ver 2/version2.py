@@ -53,10 +53,29 @@ def fill_null_values(df):
 #     ])
 # ])
 
+# app.layout = html.Div([
+#     html.H1("Video Game Sales", style={'textAlign': 'center'}),
+#     html.Div(className='row', children=[
+#         html.Div(className='col-md-6', children=[
+#             html.Div(id='charts-container', children=[
+#                 dcc.Graph(
+#                     id='console-publisher-sunburst',
+#                     figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
+#                 ),
+#                 html.Div(id='detail-chart-container')
+#             ])
+#         ]),
+#         html.Div(className='col-md-6', children=[
+#             dcc.Graph(id='scatter-plot', figure=fig_scatter)
+#         ])
+#     ])
+# ])
+
 app.layout = html.Div([
     html.H1("Video Game Sales", style={'textAlign': 'center'}),
     html.Div(className='row', children=[
         html.Div(className='col-md-6', children=[
+            html.H2("Sunburst Chart", style={'textAlign': 'center'}),
             html.Div(id='charts-container', children=[
                 dcc.Graph(
                     id='console-publisher-sunburst',
@@ -66,11 +85,11 @@ app.layout = html.Div([
             ])
         ]),
         html.Div(className='col-md-6', children=[
+            html.H2("Scatter Plot", style={'textAlign': 'center'}),
             dcc.Graph(id='scatter-plot', figure=fig_scatter)
         ])
     ])
 ])
-
 
 
 
