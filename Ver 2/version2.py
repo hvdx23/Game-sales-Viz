@@ -15,7 +15,7 @@ df['developer'] = df['developer'].fillna('Unknown')
 # Aggregate data by console and publisher for the initial sunburst chart
 agg_df = df.groupby(['console', 'publisher']).sum().reset_index()
 
-# Create the scatter plot for Critic Score vs. Total Sales
+# Create the initial scatter plot (with all data)
 fig_scatter = px.scatter(
     df, x='critic_score', y='total_sales', color='genre', 
     title='Critic Score vs. Total Sales',
@@ -42,10 +42,11 @@ app.layout = html.Div([
 
 # Define the callback function for interactivity
 @app.callback(
-    Output('detail-chart-container', 'children'),
+    [Output('detail-chart-container', 'children'),
+     Output('scatter-plot', 'figure')],
     Input('console-publisher-sunburst', 'clickData')
 )
-def update_detail_chart(clickData):
+def update_charts(clickData):
     if clickData:
         path = clickData['points'][0]['id']
         logging.info(f"Clicked path: {path}")
@@ -53,7 +54,7 @@ def update_detail_chart(clickData):
         # Split the path into components
         path_parts = path.split('/')
         logging.info(f"Length of path_parts: {len(path_parts)}")
-        
+
         # Create a filtering condition based on the path parts
         condition = True
         for i, part in enumerate(path_parts):
@@ -62,21 +63,30 @@ def update_detail_chart(clickData):
                 condition = condition & (df[column] == part)
         
         filtered_df = df[condition]
-        
+
         # Determine the path based on the depth of the click
         if len(path_parts) == 1:
-            sunburst_path = ['publisher', 'developer', 'title']
+            # Reset the detail chart and scatter plot when returning to the first level
+            return None, fig_scatter
         elif len(path_parts) == 2:
-            sunburst_path = ['publisher', 'developer', 'title']
+            sunburst_path = ['developer', 'title']
+        elif len(path_parts) == 3:
+            sunburst_path = ['title']
         else:
             sunburst_path = ['console', 'publisher', 'developer', 'title']
-        
-        figure = px.sunburst(filtered_df, path=sunburst_path, values='total_sales')
-        
-        return dcc.Graph(id='detail-sunburst', figure=figure)
 
-    # Return None if no clickData
-    return None
+        detail_figure = px.sunburst(filtered_df, path=sunburst_path, values='total_sales')
+        
+        scatter_figure = px.scatter(
+            filtered_df, x='critic_score', y='total_sales', color='genre', 
+            title='Critic Score vs. Total Sales',
+            labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'}
+        )
+
+        return dcc.Graph(id='detail-sunburst', figure=detail_figure), scatter_figure
+
+    # Clear the detail chart and reset the scatter plot if no clickData
+    return None, fig_scatter
 
 # Run the app
 if __name__ == '__main__':
