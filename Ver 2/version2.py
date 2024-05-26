@@ -53,14 +53,18 @@ app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
         ]),
         html.Div(className='col-md-6', children=[
             html.H2("Scatter Plot", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
-            dcc.Graph(id='scatter-plot', figure=fig_scatter)
+            dcc.Graph(id='scatter-plot', figure=fig_scatter),
+            html.H2("Bar Chart", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'blue'}),
+            html.Div(id='bar-chart-container'),
+            
         ])
     ])
 ])
 
 @app.callback(
     [Output('detail-chart-container', 'children'),
-     Output('scatter-plot', 'figure')],
+     Output('scatter-plot', 'figure'),
+     Output('bar-chart-container', 'children')],
     Input('console-publisher-sunburst', 'clickData')
 )
 def update_charts(clickData):
@@ -104,10 +108,9 @@ def update_charts(clickData):
             )
 
             return [dcc.Graph(id='detail-sunburst', figure=detail_figure), 
-                    dcc.Graph(id='detail-bar-chart', figure=bar_chart)], scatter_figure
-
-    # Clear the detail chart and reset the scatter plot if no clickData
-    return None, fig_scatter
+                scatter_figure, 
+                dcc.Graph(id='detail-bar-chart', figure=bar_chart)]
+    return None, fig_scatter, None, None
 
 # Run the app
 if __name__ == '__main__':
