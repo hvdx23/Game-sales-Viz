@@ -1,3 +1,4 @@
+
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -15,6 +16,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # Load and preprocess the data
 df = pd.read_csv('1234.csv')
 
+
+
 # Aggregate data by console and publisher for the initial sunburst chart
 agg_df = df.groupby(['console', 'publisher']).sum().reset_index()
 
@@ -30,11 +33,18 @@ fig_scatter = px.scatter(
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Define a function to fill null values in a DataFrame with random values within specified ranges
+# def fill_null_values(df):
+#     null_count = df.isnull().sum().sum()  # Count total null values before filling
+#     df.loc[df['critic_score'].isnull(), 'critic_score'] = np.round(np.random.uniform(1, 6, size=len(df[df['critic_score'].isnull()])), 2)
+#     df.loc[df['total_sales'].isnull(), 'total_sales'] = np.round(np.random.uniform(0.1, 2.5, size=len(df[df['total_sales'].isnull()])), 2)
+#     filled_null_count = df.isnull().sum().sum() - null_count  # Count total null values filled
+#     logging.info(f"Filled {filled_null_count} null values.")
+#     return df
 def fill_null_values(df):
-    null_count = df.isnull().sum().sum()  # Count total null values before filling
+    null_count = df['critic_score'].isnull().sum() + df['total_sales'].isnull().sum()  # Count total null values before filling
     df.loc[df['critic_score'].isnull(), 'critic_score'] = np.round(np.random.uniform(1, 6, size=len(df[df['critic_score'].isnull()])), 2)
     df.loc[df['total_sales'].isnull(), 'total_sales'] = np.round(np.random.uniform(0.1, 2.5, size=len(df[df['total_sales'].isnull()])), 2)
-    filled_null_count = df.isnull().sum().sum() - null_count  # Count total null values filled
+    filled_null_count = null_count - df['critic_score'].isnull().sum() - df['total_sales'].isnull().sum()  # Count total null values filled
     logging.info(f"Filled {filled_null_count} null values.")
     return df
 
@@ -42,7 +52,7 @@ app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
     html.H1("Video Game Sales Visualization Dashboard", style={'textAlign': 'center', 'font-family': ' Agency FB', 'font-style':'bold', 'color':'orange','font-size':'75px'}),
     html.Div(className='row',style={'backgroundColor': 'lightblack'}, children=[
         html.Div(className='col-md-6', children=[
-            html.H2("Sunburst Chart", style={'textAlign': 'center','font-family': ' Agency FB', 'color' :'orange'}),
+            html.H2("Selection & filtering", style={'textAlign': 'center','font-family': ' Agency FB', 'color' :'orange'}),
             html.Div(id='charts-container', children=[
                 dcc.Graph(
                     id='console-publisher-sunburst',
@@ -52,9 +62,15 @@ app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
             ])
         ]),
         html.Div(className='col-md-6', children=[
+<<<<<<< HEAD
             html.H2("Scatter Plot", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
             dcc.Graph(id='scatter-plot', figure=fig_scatter),
             html.H2("Bar Chart", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'blue'}),
+=======
+            html.H2("Visualization of genres", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
+            dcc.Graph(id='scatter-plot', figure=fig_scatter),
+            html.H2("Total sales details", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'blue'}),
+>>>>>>> ee8ec53 (The dashboard working as expected.The issue with console log errors need to be rectfied. Errors coming because of the null value for scatter plot)
             html.Div(id='bar-chart-container'),
             
         ])
