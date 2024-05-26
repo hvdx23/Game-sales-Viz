@@ -62,15 +62,15 @@ app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
             ])
         ]),
         html.Div(className='col-md-6', children=[
-<<<<<<< HEAD
+
             html.H2("Scatter Plot", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
             dcc.Graph(id='scatter-plot', figure=fig_scatter),
             html.H2("Bar Chart", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'blue'}),
-=======
+
             html.H2("Visualization of genres", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
             dcc.Graph(id='scatter-plot', figure=fig_scatter),
             html.H2("Total sales details", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'blue'}),
->>>>>>> ee8ec53 (The dashboard working as expected.The issue with console log errors need to be rectfied. Errors coming because of the null value for scatter plot)
+
             html.Div(id='bar-chart-container'),
             
         ])
