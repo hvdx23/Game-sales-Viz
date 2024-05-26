@@ -8,6 +8,8 @@ import numpy as np
 import dash_bootstrap_components as dbc
 
 # Set up logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Load and preprocess the data
@@ -20,7 +22,8 @@ agg_df = df.groupby(['console', 'publisher']).sum().reset_index()
 fig_scatter = px.scatter(
     df, x='critic_score', y='total_sales', color='genre', 
     title='Critic Score vs. Total Sales',
-    labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'}
+    labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'},
+    hover_data =['title', 'developer', 'publisher', 'total_sales', 'genre', 'console']
 )
 
 # Initialize the Dash app
@@ -37,45 +40,11 @@ def fill_null_values(df):
     return df
 
 
-
-# # Define the layout of the app
-# app.layout = html.Div([
-#     html.H1("Video Game Sales"),
-#     html.Div(id='charts-container', children=[
-#         dcc.Graph(
-#             id='console-publisher-sunburst',
-#             figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
-#         ),
-#         html.Div(id='detail-chart-container')
-#     ]),
-#     html.Div([
-#         dcc.Graph(id='scatter-plot', figure=fig_scatter)
-#     ])
-# ])
-
-# app.layout = html.Div([
-#     html.H1("Video Game Sales", style={'textAlign': 'center'}),
-#     html.Div(className='row', children=[
-#         html.Div(className='col-md-6', children=[
-#             html.Div(id='charts-container', children=[
-#                 dcc.Graph(
-#                     id='console-publisher-sunburst',
-#                     figure=px.sunburst(agg_df, path=['console', 'publisher'], values='total_sales')
-#                 ),
-#                 html.Div(id='detail-chart-container')
-#             ])
-#         ]),
-#         html.Div(className='col-md-6', children=[
-#             dcc.Graph(id='scatter-plot', figure=fig_scatter)
-#         ])
-#     ])
-# ])
-
-app.layout = html.Div([
-    html.H1("Video Game Sales", style={'textAlign': 'center'}),
-    html.Div(className='row', children=[
+app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
+    html.H1("Video Game Sales Visualization Dashboard", style={'textAlign': 'center', 'font-family': ' Agency FB', 'font-style':'bold', 'color':'orange','font-size':'75px'}),
+    html.Div(className='row',style={'backgroundColor': 'lightblack'}, children=[
         html.Div(className='col-md-6', children=[
-            html.H2("Sunburst Chart", style={'textAlign': 'center'}),
+            html.H2("Sunburst Chart", style={'textAlign': 'center','font-family': ' Agency FB', 'color' :'orange'}),
             html.Div(id='charts-container', children=[
                 dcc.Graph(
                     id='console-publisher-sunburst',
@@ -85,12 +54,11 @@ app.layout = html.Div([
             ])
         ]),
         html.Div(className='col-md-6', children=[
-            html.H2("Scatter Plot", style={'textAlign': 'center'}),
+            html.H2("Scatter Plot", style={'textAlign': 'center', 'font-family': ' Agency FB','color':'red'}),
             dcc.Graph(id='scatter-plot', figure=fig_scatter)
         ])
     ])
 ])
-
 
 
 
@@ -139,7 +107,8 @@ def update_charts(clickData):
         scatter_figure = px.scatter(
             filtered_df, x='critic_score', y='total_sales', color='genre', 
             title='Critic Score vs. Total Sales',
-            labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'}
+            labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'},
+            hover_data =['title', 'developer', 'publisher', 'total_sales', 'genre']
         )
 
         return dcc.Graph(id='detail-sunburst', figure=detail_figure), scatter_figure
@@ -149,4 +118,4 @@ def update_charts(clickData):
 
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
