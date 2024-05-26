@@ -33,8 +33,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Define a function to fill null values in a DataFrame with random values within specified ranges
 def fill_null_values(df):
     null_count = df.isnull().sum().sum()  # Count total null values before filling
-    df.loc[df['critic_score'].isnull(), 'critic_score'] = np.random.uniform(1, 6, size=len(df[df['critic_score'].isnull()]))
-    df.loc[df['total_sales'].isnull(), 'total_sales'] = np.random.uniform(0.1, 2.5, size=len(df[df['total_sales'].isnull()]))
+    df.loc[df['critic_score'].isnull(), 'critic_score'] = np.round(np.random.uniform(1, 6, size=len(df[df['critic_score'].isnull()])), 2)
+    df.loc[df['total_sales'].isnull(), 'total_sales'] = np.round(np.random.uniform(0.1, 2.5, size=len(df[df['total_sales'].isnull()])), 2)
     filled_null_count = df.isnull().sum().sum() - null_count  # Count total null values filled
     logging.info(f"Filled {filled_null_count} null values.")
     return df
