@@ -27,9 +27,8 @@ fig_scatter = px.scatter(
 )
 
 # Initialize the Dash app
-# app = dash.Dash(__name__)
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-# Define a function to fill null values in a DataFrame
+
 # Define a function to fill null values in a DataFrame with random values within specified ranges
 def fill_null_values(df):
     null_count = df.isnull().sum().sum()  # Count total null values before filling
@@ -38,7 +37,6 @@ def fill_null_values(df):
     filled_null_count = df.isnull().sum().sum() - null_count  # Count total null values filled
     logging.info(f"Filled {filled_null_count} null values.")
     return df
-
 
 app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
     html.H1("Video Game Sales Visualization Dashboard", style={'textAlign': 'center', 'font-family': ' Agency FB', 'font-style':'bold', 'color':'orange','font-size':'75px'}),
@@ -60,9 +58,6 @@ app.layout = html.Div(style={'backgroundColor': 'black'}, children=[
     ])
 ])
 
-
-
-# Define the callback function for interactivity
 @app.callback(
     [Output('detail-chart-container', 'children'),
      Output('scatter-plot', 'figure')],
@@ -72,7 +67,6 @@ def update_charts(clickData):
     if clickData:
         path = clickData['points'][0]['id']
         logging.info(f"Clicked path: {path}")
-        
 
         # Split the path into components
         path_parts = path.split('/')
@@ -93,25 +87,24 @@ def update_charts(clickData):
             # Reset the detail chart and scatter plot when returning to the first level
             return None, fig_scatter
         elif len(path_parts) == 2:
-            sunburst_path = ['developer', 'title']
-        elif len(path_parts) == 3:
-            sunburst_path = ['title']
-        else:
-            sunburst_path = ['console', 'publisher', 'developer', 'title']
+            logging.info("Creating bar chart for total sales by title")
+            sunburst_path = ['publisher', 'developer', 'title']
+            bar_chart = px.bar(filtered_df, x='developer', y='total_sales', title='Total Sales by Title')
 
-        # Fill null values for the filtered DataFrame
-        filtered_df = fill_null_values(filtered_df)
+            # Fill null values for the filtered DataFrame
+            filtered_df = fill_null_values(filtered_df)
 
-        detail_figure = px.sunburst(filtered_df, path=sunburst_path, values='total_sales')
-        
-        scatter_figure = px.scatter(
-            filtered_df, x='critic_score', y='total_sales', color='genre', 
-            title='Critic Score vs. Total Sales',
-            labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'},
-            hover_data =['title', 'developer', 'publisher', 'total_sales', 'genre']
-        )
+            detail_figure = px.sunburst(filtered_df, path=sunburst_path, values='total_sales')
+            
+            scatter_figure = px.scatter(
+                filtered_df, x='critic_score', y='total_sales', color='genre', 
+                title='Critic Score vs. Total Sales',
+                labels={'critic_score': 'Critic Score', 'total_sales': 'Total Sales'},
+                hover_data =['title', 'developer', 'publisher', 'total_sales', 'genre']
+            )
 
-        return dcc.Graph(id='detail-sunburst', figure=detail_figure), scatter_figure
+            return [dcc.Graph(id='detail-sunburst', figure=detail_figure), 
+                    dcc.Graph(id='detail-bar-chart', figure=bar_chart)], scatter_figure
 
     # Clear the detail chart and reset the scatter plot if no clickData
     return None, fig_scatter
