@@ -104,7 +104,7 @@ def update_charts(clickData):
         elif len(path_parts) == 2:
             logging.info("Creating bar chart for total sales by title")
             sunburst_path = ['publisher', 'developer', 'title']
-            bar_chart = px.bar(filtered_df, x='developer', y='total_sales', title='Total Sales by Title', hover_data=['title','total_sales'])
+            bar_chart = px.bar(filtered_df, x='developer', y='total_sales', title='Total Sales by Title',labels={'total_sales': 'Total sales in Million', 'developer':'Developer'}, hover_data=['title','total_sales'])
 
             # Fill null values for the filtered DataFrame
             filtered_df = fill_null_values(filtered_df)
